@@ -1,7 +1,15 @@
 #include <iostream>
-#include "vulkan/vulkan.h"
+#include "dud_app.hpp"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+    dud::DudApp app{};
+
+    try {
+        app.Run();
+    } catch (const std::exception &exception) {
+        std::cerr << exception.what() << '\n';
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }

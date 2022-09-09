@@ -5,8 +5,20 @@ find_package(Vulkan REQUIRED)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}
+        main.cpp dud_window.hpp dud_window.cpp dud_app.cpp dud_app.hpp)
 
-target_sources(${PROJECT_NAME} PRIVATE main.cpp)
+add_subdirectory(external/glfw)
+add_subdirectory(external/glm)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
+target_include_directories(${PROJECT_NAME}
+        PUBLIC external/glfw/include/GLFW)
+
+target_link_directories(${PROJECT_NAME}
+        PRIVATE external/glfw/src)
+
+target_link_libraries(${PROJECT_NAME}
+        Vulkan::Vulkan
+        glfw
+        glm::glm)
+
