@@ -5,7 +5,7 @@ int main() {
     dud::DudApp app{};
 
     try {
-        app.Run();
+        app.run();
     } catch (const std::exception &exception) {
         std::cerr << exception.what() << '\n';
         return EXIT_FAILURE;

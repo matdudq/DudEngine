@@ -7,6 +7,15 @@
 namespace dud{
     class DudWindow
     {
+    private:
+        bool framebufferResized = false;
+        int width;
+        int height;
+
+        std::string windowName;
+
+        GLFWwindow *window;
+
     public:
         DudWindow(int width, int height, std::string name);
         ~DudWindow();
@@ -14,16 +23,14 @@ namespace dud{
         DudWindow(const DudWindow &) = delete;
         DudWindow &operator=(const DudWindow &) = delete;
 
-        bool ShouldClose();
+        bool shouldClose();
+        bool wasWindowResized();
+        void resetWindowResizedFlag();
+        VkExtent2D getExtent() const { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+        void createWindowSurface(VkInstance pT, VkSurfaceKHR *pT1);
 
     private:
-        void InitWindow();
-
-        const int width;
-        const int height;
-
-        std::string windowName;
-
-        GLFWwindow *window;
+        static void frameBufferResizeCallback(GLFWwindow *window, int width, int height);
+        void initWindow();
     };
 }
