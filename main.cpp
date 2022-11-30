@@ -2,7 +2,7 @@
 #include "dud_app.hpp"
 
 int main() {
-    dud::DudApp app{};
+    dud::App app{};
 
     try {
         app.run();

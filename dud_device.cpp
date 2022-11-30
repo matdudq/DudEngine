@@ -49,7 +49,7 @@ namespace dud {
     }
 
 // class member functions
-    DudDevice::DudDevice(DudWindow &window) : window{window} {
+    Device::Device(Window &window) : window{window} {
         createInstance();
         setupDebugMessenger();
         createSurface();
@@ -58,7 +58,7 @@ namespace dud {
         createCommandPool();
     }
 
-    DudDevice::~DudDevice() {
+    Device::~Device() {
         vkDestroyCommandPool(device_, commandPool, nullptr);
         vkDestroyDevice(device_, nullptr);
 
@@ -70,7 +70,7 @@ namespace dud {
         vkDestroyInstance(instance, nullptr);
     }
 
-    void DudDevice::createInstance() {
+    void Device::createInstance() {
         if (enableValidationLayers && !checkValidationLayerSupport()) {
             throw std::runtime_error("validation layers requested, but not available!");
         }
@@ -106,7 +106,7 @@ namespace dud {
         hasGflwRequiredInstanceExtensions();
     }
 
-    void DudDevice::pickPhysicalDevice() {
+    void Device::pickPhysicalDevice() {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
         if (deviceCount == 0) {
@@ -131,7 +131,7 @@ namespace dud {
         std::cout << "physical device: " << properties.deviceName << std::endl;
     }
 
-    void DudDevice::createLogicalDevice() {
+    void Device::createLogicalDevice() {
         QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -175,7 +175,7 @@ namespace dud {
         vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
     }
 
-    void DudDevice::createCommandPool() {
+    void Device::createCommandPool() {
         QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
 
         VkCommandPoolCreateInfo poolInfo = {};
@@ -187,9 +187,9 @@ namespace dud {
         API_CALL_VALIDATE(vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool));
     }
 
-    void DudDevice::createSurface() { window.createWindowSurface(instance, &surface_); }
+    void Device::createSurface() { window.createWindowSurface(instance, &surface_); }
 
-    bool DudDevice::isDeviceSuitable(VkPhysicalDevice device) {
+    bool Device::isDeviceSuitable(VkPhysicalDevice device) {
         QueueFamilyIndices indices = findQueueFamilies(device);
 
         bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -207,7 +207,7 @@ namespace dud {
                supportedFeatures.samplerAnisotropy;
     }
 
-    void DudDevice::populateDebugMessengerCreateInfo(
+    void Device::populateDebugMessengerCreateInfo(
             VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
         createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -220,14 +220,14 @@ namespace dud {
         createInfo.pUserData = nullptr;  // Optional
     }
 
-    void DudDevice::setupDebugMessenger() {
+    void Device::setupDebugMessenger() {
         if (!enableValidationLayers) return;
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
         populateDebugMessengerCreateInfo(createInfo);
         API_CALL_VALIDATE(CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger));
     }
 
-    bool DudDevice::checkValidationLayerSupport() {
+    bool Device::checkValidationLayerSupport() {
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -252,7 +252,7 @@ namespace dud {
         return true;
     }
 
-    std::vector<const char *> DudDevice::getRequiredExtensions() {
+    std::vector<const char *> Device::getRequiredExtensions() {
         uint32_t glfwExtensionCount = 0;
         const char **glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -266,7 +266,7 @@ namespace dud {
         return extensions;
     }
 
-    void DudDevice::hasGflwRequiredInstanceExtensions() {
+    void Device::hasGflwRequiredInstanceExtensions() {
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -289,7 +289,7 @@ namespace dud {
         }
     }
 
-    bool DudDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -309,7 +309,7 @@ namespace dud {
         return requiredExtensions.empty();
     }
 
-    QueueFamilyIndices DudDevice::findQueueFamilies(VkPhysicalDevice device) {
+    QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
         QueueFamilyIndices indices;
 
         uint32_t queueFamilyCount = 0;
@@ -340,7 +340,7 @@ namespace dud {
         return indices;
     }
 
-    SwapChainSupportDetails DudDevice::querySwapChainSupport(VkPhysicalDevice device) {
+    SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
         SwapChainSupportDetails details;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
 
@@ -366,7 +366,7 @@ namespace dud {
         return details;
     }
 
-    VkFormat DudDevice::findSupportedFormat(
+    VkFormat Device::findSupportedFormat(
             const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
         for (VkFormat format : candidates) {
             VkFormatProperties props;
@@ -382,7 +382,7 @@ namespace dud {
         throw std::runtime_error("failed to find supported format!");
     }
 
-    uint32_t DudDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -395,7 +395,7 @@ namespace dud {
         throw std::runtime_error("failed to find suitable memory type!");
     }
 
-    void DudDevice::createBuffer(
+    void Device::createBuffer(
             VkDeviceSize size,
             VkBufferUsageFlags usage,
             VkMemoryPropertyFlags properties,
@@ -422,7 +422,7 @@ namespace dud {
         vkBindBufferMemory(device_, buffer, bufferMemory, 0);
     }
 
-    VkCommandBuffer DudDevice::beginSingleTimeCommands() {
+    VkCommandBuffer Device::beginSingleTimeCommands() {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -440,7 +440,7 @@ namespace dud {
         return commandBuffer;
     }
 
-    void DudDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+    void Device::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
         vkEndCommandBuffer(commandBuffer);
 
         VkSubmitInfo submitInfo{};
@@ -454,7 +454,7 @@ namespace dud {
         vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
     }
 
-    void DudDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    void Device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkBufferCopy copyRegion{};
@@ -466,7 +466,7 @@ namespace dud {
         endSingleTimeCommands(commandBuffer);
     }
 
-    void DudDevice::copyBufferToImage(
+    void Device::copyBufferToImage(
             VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount) {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -493,7 +493,7 @@ namespace dud {
         endSingleTimeCommands(commandBuffer);
     }
 
-    void DudDevice::createImageWithInfo(
+    void Device::createImageWithInfo(
             const VkImageCreateInfo &imageInfo,
             VkMemoryPropertyFlags properties,
             VkImage &image,

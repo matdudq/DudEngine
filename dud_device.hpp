@@ -24,7 +24,7 @@ namespace dud {
         bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
     };
 
-    class DudDevice {
+    class Device {
     public:
 #ifdef NDEBUG
         const bool enableValidationLayers = false;
@@ -32,18 +32,18 @@ namespace dud {
         const bool enableValidationLayers = true;
 #endif
 
-        DudDevice(DudWindow &window);
+        Device(Window &window);
 
-        ~DudDevice();
+        ~Device();
 
         // Not copyable or movable
-        DudDevice(const DudDevice &) = delete;
+        Device(const Device &) = delete;
 
-        DudDevice & operator=(const DudDevice &) = delete;
+        Device & operator=(const Device &) = delete;
 
-        DudDevice(DudDevice &&) = delete;
+        Device(Device &&) = delete;
 
-        DudDevice &operator=(DudDevice &&) = delete;
+        Device &operator=(Device &&) = delete;
 
         VkCommandPool getCommandPool() { return commandPool; }
 
@@ -122,7 +122,7 @@ namespace dud {
         VkInstance instance;
         VkDebugUtilsMessengerEXT debugMessenger;
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        DudWindow &window;
+        Window &window;
         VkCommandPool commandPool;
 
         VkDevice device_;

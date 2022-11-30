@@ -9,8 +9,18 @@
 
 namespace dud {
 
-    DudSwapChain::DudSwapChain(DudDevice &deviceRef, VkExtent2D extent)
+    SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent)
             : device{deviceRef}, windowExtent{extent} {
+        init();
+    }
+
+    SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous)
+            : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+        init();
+        oldSwapChain = nullptr;
+    }
+
+    void SwapChain::init() {
         createSwapChain();
         createImageViews();
         createRenderPass();
@@ -19,7 +29,7 @@ namespace dud {
         createSyncObjects();
     }
 
-    DudSwapChain::~DudSwapChain() {
+    SwapChain::~SwapChain() {
         for (auto imageView: swapChainImageViews) {
             vkDestroyImageView(device.device(), imageView, nullptr);
         }
@@ -50,7 +60,7 @@ namespace dud {
         }
     }
 
-    VkResult DudSwapChain::acquireNextImage(uint32_t *imageIndex) {
+    VkResult SwapChain::acquireNextImage(uint32_t *imageIndex) {
         vkWaitForFences(
                 device.device(),
                 1,
@@ -69,7 +79,7 @@ namespace dud {
         return result;
     }
 
-    VkResult DudSwapChain::submitCommandBuffers(
+    VkResult SwapChain::submitCommandBuffers(
             const VkCommandBuffer *buffers, uint32_t *imageIndex) {
         if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
             vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
@@ -114,7 +124,7 @@ namespace dud {
         return result;
     }
 
-    void DudSwapChain::createSwapChain() {
+    void SwapChain::createSwapChain() {
         SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
         VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -157,7 +167,7 @@ namespace dud {
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
 
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
+        createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
         API_CALL_VALIDATE(vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain));
 
@@ -173,7 +183,7 @@ namespace dud {
         swapChainExtent = extent;
     }
 
-    void DudSwapChain::createImageViews() {
+    void SwapChain::createImageViews() {
         swapChainImageViews.resize(swapChainImages.size());
         for (size_t i = 0; i < swapChainImages.size(); i++) {
             VkImageViewCreateInfo viewInfo{};
@@ -191,7 +201,7 @@ namespace dud {
         }
     }
 
-    void DudSwapChain::createRenderPass() {
+    void SwapChain::createRenderPass() {
         VkAttachmentDescription depthAttachment{};
         depthAttachment.format = findDepthFormat();
         depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -250,7 +260,7 @@ namespace dud {
         API_CALL_VALIDATE(vkCreateRenderPass(device.device(), &renderPassInfo, nullptr, &renderPass));
     }
 
-    void DudSwapChain::createFramebuffers() {
+    void SwapChain::createFramebuffers() {
         swapChainFramebuffers.resize(imageCount());
         for (size_t i = 0; i < imageCount(); i++) {
             std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
@@ -273,7 +283,7 @@ namespace dud {
         }
     }
 
-    void DudSwapChain::createDepthResources() {
+    void SwapChain::createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
         VkExtent2D swapChainExtent = getSwapChainExtent();
 
@@ -319,7 +329,7 @@ namespace dud {
         }
     }
 
-    void DudSwapChain::createSyncObjects() {
+    void SwapChain::createSyncObjects() {
         imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -339,7 +349,7 @@ namespace dud {
         }
     }
 
-    VkSurfaceFormatKHR DudSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) {
+    VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) {
         for (const auto &availableFormat: availableFormats) {
             if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
                 availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
@@ -350,7 +360,7 @@ namespace dud {
         return availableFormats[0];
     }
 
-    VkPresentModeKHR DudSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) {
+    VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) {
         for (const auto &availablePresentMode: availablePresentModes) {
             if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
                 std::cout << "Present mode: Mailbox" << std::endl;
@@ -369,7 +379,7 @@ namespace dud {
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 
-    VkExtent2D DudSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
+    VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
             return capabilities.currentExtent;
         } else {
@@ -385,7 +395,7 @@ namespace dud {
         }
     }
 
-    VkFormat DudSwapChain::findDepthFormat() {
+    VkFormat SwapChain::findDepthFormat() {
         return device.findSupportedFormat(
                 {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
                 VK_IMAGE_TILING_OPTIMAL,

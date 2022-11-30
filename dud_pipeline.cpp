@@ -7,19 +7,19 @@
 
 namespace dud {
 
-    DudPipeline::DudPipeline(DudDevice &device, const PipelineConfigInfo &configInfo,
-                             const std::string &vertexShaderPath, const std::string &fragmentShaderPath) : device(
+    Pipeline::Pipeline(Device &device, const PipelineConfigInfo &configInfo,
+                       const std::string &vertexShaderPath, const std::string &fragmentShaderPath) : device(
             device) {
         createGraphicsPipeline(vertexShaderPath, fragmentShaderPath, configInfo);
     }
 
-    DudPipeline::~DudPipeline() {
+    Pipeline::~Pipeline() {
         vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
         vkDestroyShaderModule(device.device(), fragmentShaderModule, nullptr);
         vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
     }
 
-    std::vector<char> DudPipeline::readFile(const std::string &filepath) {
+    std::vector<char> Pipeline::readFile(const std::string &filepath) {
         std::ifstream file{filepath, std::ios::ate | std::ios::binary};
         if (!file.is_open()) {
             throw std::runtime_error("Failed to open file" + filepath);
@@ -35,8 +35,8 @@ namespace dud {
         return buffer;
     }
 
-    void DudPipeline::createGraphicsPipeline(const std::string &vertexShaderPath, const std::string &fragmentShaderPath,
-                                             const PipelineConfigInfo configInfo) {
+    void Pipeline::createGraphicsPipeline(const std::string &vertexShaderPath, const std::string &fragmentShaderPath,
+                                          const PipelineConfigInfo configInfo) {
         assert(configInfo.pipelineLayout != VK_NULL_HANDLE);
 
         auto vertexShader = readFile(vertexShaderPath);
@@ -65,8 +65,8 @@ namespace dud {
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
-        auto attributeDescription = dud::DudModel::Vertex::GetAttributeDescriptions();
-        auto bindingDescription = dud::DudModel::Vertex::GetBindingDescriptions();
+        auto attributeDescription = dud::Model::Vertex::GetAttributeDescriptions();
+        auto bindingDescription = dud::Model::Vertex::GetBindingDescriptions();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -75,26 +75,19 @@ namespace dud {
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
         vertexInputInfo.pVertexBindingDescriptions = bindingDescription.data();
 
-        VkPipelineViewportStateCreateInfo viewportInfo{};
-        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportInfo.viewportCount = 1;
-        viewportInfo.pViewports = &configInfo.viewport;
-        viewportInfo.scissorCount = 1;
-        viewportInfo.pScissors = &configInfo.scissor;
-
         VkGraphicsPipelineCreateInfo pipelineCreateInfo{};
         pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pipelineCreateInfo.stageCount = 2;
         pipelineCreateInfo.pStages = shaderStages;
         pipelineCreateInfo.pVertexInputState = &vertexInputInfo;
         pipelineCreateInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-        pipelineCreateInfo.pViewportState = &viewportInfo;
+        pipelineCreateInfo.pViewportState = &configInfo.viewportInfo;
         pipelineCreateInfo.pRasterizationState = &configInfo.rasterizationInfo;
         pipelineCreateInfo.pMultisampleState = &configInfo.multisampleInfo;
 
         pipelineCreateInfo.pColorBlendState = &configInfo.colorBlendInfo;
         pipelineCreateInfo.pDepthStencilState = &configInfo.depthStencilInfo;
-        pipelineCreateInfo.pDynamicState = nullptr;
+        pipelineCreateInfo.pDynamicState = &configInfo.dynamicStateInfo;
 
         pipelineCreateInfo.layout = configInfo.pipelineLayout;
         pipelineCreateInfo.renderPass = configInfo.renderPass;
@@ -107,7 +100,7 @@ namespace dud {
                                                     &pipelineCreateInfo, nullptr, &graphicsPipeline));
     }
 
-    void DudPipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule) {
+    void Pipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule) {
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         createInfo.codeSize = code.size();
@@ -116,21 +109,16 @@ namespace dud {
         API_CALL_VALIDATE(vkCreateShaderModule(device.device(), &createInfo, nullptr, shaderModule));
     }
 
-    PipelineConfigInfo DudPipeline::DefaultPipelineConfigInfo(uint32_t width, uint32_t height) {
-        PipelineConfigInfo configInfo{};
+    void Pipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
         configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
-        configInfo.viewport.x = 0.0f;
-        configInfo.viewport.y = 0.0f;
-        configInfo.viewport.width = static_cast<float>(width);
-        configInfo.viewport.height = static_cast<float>(height);
-        configInfo.viewport.minDepth = 0.0f;
-        configInfo.viewport.maxDepth = 1.0f;
-
-        configInfo.scissor.offset = {0, 0};
-        configInfo.scissor.extent = {width, height};
+        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        configInfo.viewportInfo.viewportCount = 1;
+        configInfo.viewportInfo.pViewports = nullptr;
+        configInfo.viewportInfo.scissorCount = 1;
+        configInfo.viewportInfo.pScissors = nullptr;
 
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
@@ -184,10 +172,14 @@ namespace dud {
         configInfo.depthStencilInfo.front = {};  // Optional
         configInfo.depthStencilInfo.back = {};   // Optional
 
-        return configInfo;
+        configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+        configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
+        configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+        configInfo.dynamicStateInfo.flags = 0;
     }
 
-    void DudPipeline::Bind(VkCommandBuffer commandBuffer) {
+    void Pipeline::bind(VkCommandBuffer commandBuffer) {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 }

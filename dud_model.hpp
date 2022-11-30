@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 
 namespace dud{
-    class DudModel {
+    class Model {
     public:
         struct Vertex{
             glm::vec2 position;
@@ -18,20 +18,20 @@ namespace dud{
         };
 
     private:
-        DudDevice& device;
+        Device& device;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;
 
     public:
-        DudModel(DudDevice &device, const std::vector<Vertex>& vertices);
+        Model(Device &device, const std::vector<Vertex>& vertices);
 
-        ~DudModel();
+        ~Model();
 
-        DudModel(const DudModel &) = delete;
-        DudModel &operator=(const DudModel &) = delete;
-        void Bind(VkCommandBuffer commandBuffer);
-        void Draw(VkCommandBuffer commandBuffer);
+        Model(const Model &) = delete;
+        Model &operator=(const Model &) = delete;
+        void bind(VkCommandBuffer commandBuffer);
+        void draw(VkCommandBuffer commandBuffer);
     private:
         void createVertexBuffers(const std::vector<Vertex>& vertices);
     };

@@ -8,25 +8,25 @@
 #include "dud_model.hpp"
 
 namespace dud {
-    class DudApp {
+    class App {
 
     public:
         static constexpr int WIDTH = 800;
         static constexpr int HEIGHT = 800;
     private:
-        DudWindow window{WIDTH, HEIGHT, "Main Window"};
-        DudDevice device{window};
-        DudSwapChain swapChain{device, window.getExtent()};
-        std::unique_ptr<DudPipeline> pipeline;
+        Window window{WIDTH, HEIGHT, "Main Window"};
+        Device device{window};
+        std::unique_ptr<SwapChain> swapChain;
+        std::unique_ptr<Pipeline> pipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
-        std::unique_ptr<DudModel> model;
+        std::unique_ptr<Model> model;
     public:
-        DudApp();
-        ~DudApp();
+        App();
+        ~App();
 
-        DudApp(const DudApp &) = delete;
-        DudApp &operator=(const DudApp &) = delete;
+        App(const App &) = delete;
+        App &operator=(const App &) = delete;
 
         void run();
     private:
@@ -34,6 +34,7 @@ namespace dud {
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
+        void freeCommandBuffers();
         void drawFrame();
         void recreateSwapChain();
         void recordCommandBuffer(int imageIndex);

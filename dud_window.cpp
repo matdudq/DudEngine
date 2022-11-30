@@ -2,16 +2,16 @@
 #include "macros.hpp"
 
 namespace dud{
-    DudWindow::DudWindow(int width, int height, std::string name) : width(width), height(height), windowName(name) {
+    Window::Window(int width, int height, std::string name) : width(width), height(height), windowName(name) {
         initWindow();
     }
 
-    DudWindow::~DudWindow() {
+    Window::~Window() {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
 
-    void DudWindow::initWindow() {
+    void Window::initWindow() {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -21,24 +21,24 @@ namespace dud{
         glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
     }
 
-    bool DudWindow::shouldClose() {
+    bool Window::shouldClose() {
         return glfwWindowShouldClose(window);
     }
 
-    void DudWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
+    void Window::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
         API_CALL_VALIDATE(glfwCreateWindowSurface(instance, window, nullptr, surface));
     }
 
-    void DudWindow::resetWindowResizedFlag() {
+    void Window::resetWindowResizedFlag() {
         framebufferResized = false;
     }
 
-    bool DudWindow::wasWindowResized() {
+    bool Window::wasWindowResized() {
         return framebufferResized;
     }
 
-    void DudWindow::frameBufferResizeCallback(GLFWwindow *window, int width, int height) {
-        auto dudWindow = reinterpret_cast<DudWindow*>(glfwGetWindowUserPointer(window));
+    void Window::frameBufferResizeCallback(GLFWwindow *window, int width, int height) {
+        auto dudWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
         dudWindow->framebufferResized = true;
         dudWindow->width = width;
         dudWindow->height = height;

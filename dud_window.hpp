@@ -5,7 +5,7 @@
 #include <GLFW//glfw3.h>
 
 namespace dud{
-    class DudWindow
+    class Window
     {
     private:
         bool framebufferResized = false;
@@ -17,11 +17,11 @@ namespace dud{
         GLFWwindow *window;
 
     public:
-        DudWindow(int width, int height, std::string name);
-        ~DudWindow();
+        Window(int width, int height, std::string name);
+        ~Window();
 
-        DudWindow(const DudWindow &) = delete;
-        DudWindow &operator=(const DudWindow &) = delete;
+        Window(const Window &) = delete;
+        Window &operator=(const Window &) = delete;
 
         bool shouldClose();
         bool wasWindowResized();
