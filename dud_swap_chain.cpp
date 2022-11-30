@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include <limits>
+#include <utility>
 
 namespace dud {
 
@@ -14,8 +15,8 @@ namespace dud {
         init();
     }
 
-    SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous)
-            : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+    SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent, Ref<SwapChain> previous)
+            : device{deviceRef}, windowExtent{extent}, oldSwapChain{std::move(previous)} {
         init();
         oldSwapChain = nullptr;
     }

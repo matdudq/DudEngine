@@ -1,0 +1,19 @@
+#pragma once
+
+#include <utility>
+
+#include "../dud_mesh.hpp"
+#include "../dud_core.hpp"
+
+namespace dud{
+    struct MeshComponent
+    {
+        Ref<Mesh> model;
+        glm::vec4 color;
+
+        MeshComponent() = default;
+        MeshComponent(const MeshComponent&) = default;
+        MeshComponent(Ref<Mesh> transform, glm::vec4 color) : model(std::move(transform)), color(color){}
+    };
+}
+

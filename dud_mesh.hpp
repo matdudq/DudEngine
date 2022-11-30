@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 
 namespace dud{
-    class Model {
+    class Mesh {
     public:
         struct Vertex{
             glm::vec2 position;
@@ -24,12 +24,12 @@ namespace dud{
         uint32_t vertexCount;
 
     public:
-        Model(Device &device, const std::vector<Vertex>& vertices);
+        Mesh(Device &device, const std::vector<Vertex>& vertices);
 
-        ~Model();
+        ~Mesh();
 
-        Model(const Model &) = delete;
-        Model &operator=(const Model &) = delete;
+        Mesh(const Mesh &) = delete;
+        Mesh &operator=(const Mesh &) = delete;
         void bind(VkCommandBuffer commandBuffer);
         void draw(VkCommandBuffer commandBuffer);
     private:

@@ -19,8 +19,8 @@ add_executable(${PROJECT_NAME}
         dud_swap_chain.hpp
         macros.cpp
         macros.hpp
-        dud_model.cpp
-        dud_model.hpp scene/scene.cpp scene/scene.hpp)
+        dud_mesh.cpp
+        dud_mesh.hpp dud_scene.cpp dud_scene.hpp components/dud_transform_component.cpp components/dud_transform_component.hpp dud_core.hpp components/dud_mesh_component.cpp components/dud_mesh_component.hpp)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)

@@ -3,7 +3,7 @@
 #include <cassert>
 #include "dud_pipeline.hpp"
 #include "macros.hpp"
-#include "dud_model.hpp"
+#include "dud_mesh.hpp"
 
 namespace dud {
 
@@ -65,8 +65,8 @@ namespace dud {
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
-        auto attributeDescription = dud::Model::Vertex::GetAttributeDescriptions();
-        auto bindingDescription = dud::Model::Vertex::GetBindingDescriptions();
+        auto attributeDescription = dud::Mesh::Vertex::GetAttributeDescriptions();
+        auto bindingDescription = dud::Mesh::Vertex::GetBindingDescriptions();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

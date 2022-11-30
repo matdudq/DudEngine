@@ -5,7 +5,9 @@
 #include "dud_swap_chain.hpp"
 
 #include "memory"
-#include "dud_model.hpp"
+#include "dud_mesh.hpp"
+#include "dud_core.hpp"
+#include "dud_scene.hpp"
 
 namespace dud {
     class App {
@@ -16,11 +18,12 @@ namespace dud {
     private:
         Window window{WIDTH, HEIGHT, "Main Window"};
         Device device{window};
-        std::unique_ptr<SwapChain> swapChain;
-        std::unique_ptr<Pipeline> pipeline;
+        Scope<SwapChain> swapChain;
+        Scope<Pipeline> pipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
-        std::unique_ptr<Model> model;
+        Scope<Scene> scene;
+
     public:
         App();
         ~App();
@@ -30,7 +33,7 @@ namespace dud {
 
         void run();
     private:
-        void loadModels();
+        void loadScene();
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
@@ -38,5 +41,6 @@ namespace dud {
         void drawFrame();
         void recreateSwapChain();
         void recordCommandBuffer(int imageIndex);
+        void renderScene(VkCommandBuffer commandBuffer);
     };
 }

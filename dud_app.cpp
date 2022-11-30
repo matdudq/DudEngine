@@ -4,14 +4,15 @@
 
 #include "dud_app.hpp"
 #include "macros.hpp"
+#include "components/dud_transform_component.hpp"
+#include "components/dud_mesh_component.hpp"
 #include <sstream>
 #include <memory>
 
 namespace dud {
-
     struct SimplePushConstantData {
-        glm::vec2 offset;
-        alignas(16) glm::vec3 color;
+        glm::mat4 transform;
+        alignas(128) glm::vec3 color;
     };
 
     void App::run() {
@@ -24,7 +25,7 @@ namespace dud {
     }
 
     App::App() {
-        loadModels();
+        loadScene();
         createPipelineLayout();
         recreateSwapChain();
         createCommandBuffers();
@@ -34,13 +35,8 @@ namespace dud {
         vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
     }
 
-    void App::loadModels() {
-        std::vector<Model::Vertex> vertices = {
-            {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-        };
-        model = std::make_unique<Model>(device, vertices);
+    void App::loadScene() {
+        scene = std::make_unique<Scene>(device);
     }
 
     void App::createPipelineLayout() {
@@ -134,7 +130,6 @@ namespace dud {
     }
 
     void App::recordCommandBuffer(int imageIndex) {
-
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         API_CALL_VALIDATE(vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo));
@@ -166,27 +161,34 @@ namespace dud {
         vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
         vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
-        pipeline->bind(commandBuffers[imageIndex]);
-        model->bind(commandBuffers[imageIndex]);
+        renderScene(commandBuffers[imageIndex]);
 
-        for (int i = 0; i < 4; ++i) {
+        vkCmdEndRenderPass(commandBuffers[imageIndex]);
+        API_CALL_VALIDATE(vkEndCommandBuffer(commandBuffers[imageIndex]));
+    }
+
+    //TODO: Move behind Scene API
+    void App::renderScene(VkCommandBuffer commandBuffer) {
+        pipeline->bind(commandBuffer);
+
+        auto group = scene->registry.group<TransformComponent>(entt::get<MeshComponent>);
+        for (auto entity : group)
+        {
+            const auto& [transform, mesh] = group.get<TransformComponent,MeshComponent>(entity);
+
             SimplePushConstantData push{};
-            push.offset = {0.0f, -0.4f+ i * 0.25f};
-            push.color = {0.0f, 0.0f, 0.2f + 0.2f * i};
+            push.transform = transform.Transform;
+            push.color = mesh.color;
 
-            vkCmdPushConstants(commandBuffers[imageIndex],
+            vkCmdPushConstants(commandBuffer,
                                pipelineLayout,
                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                                0,
                                sizeof(SimplePushConstantData),
                                &push);
 
-            model->draw(commandBuffers[imageIndex]);
+            mesh.model->bind(commandBuffer);
+            mesh.model->draw(commandBuffer);
         }
-
-        vkCmdDraw(commandBuffers[imageIndex], 3, 1, 0, 0);
-
-        vkCmdEndRenderPass(commandBuffers[imageIndex]);
-        API_CALL_VALIDATE(vkEndCommandBuffer(commandBuffers[imageIndex]));
     }
 }

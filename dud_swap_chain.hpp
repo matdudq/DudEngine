@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dud_device.hpp"
+#include "dud_core.hpp"
 
 // vulkan headers
 #include <vulkan/vulkan.h>
@@ -17,7 +18,7 @@ namespace dud {
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
         SwapChain(Device &deviceRef, VkExtent2D windowExtent);
-        SwapChain(Device &deviceRef, VkExtent2D windowExtent, std::shared_ptr<SwapChain> previous);
+        SwapChain(Device &deviceRef, VkExtent2D windowExtent, Ref<SwapChain> previous);
 
         ~SwapChain();
 
@@ -40,10 +41,6 @@ namespace dud {
         uint32_t width() const { return swapChainExtent.width; }
 
         uint32_t height() const { return swapChainExtent.height; }
-
-        float extentAspectRatio() {
-            return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
-        }
 
         VkFormat findDepthFormat();
 
@@ -89,7 +86,7 @@ namespace dud {
         VkExtent2D windowExtent;
 
         VkSwapchainKHR swapChain;
-        std::shared_ptr<SwapChain> oldSwapChain;
+        Ref<SwapChain> oldSwapChain;
         std::vector<VkSemaphore> imageAvailableSemaphores;
         std::vector<VkSemaphore> renderFinishedSemaphores;
         std::vector<VkFence> inFlightFences;

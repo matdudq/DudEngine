@@ -1,14 +1,17 @@
 #pragma once
 
 #include "entt.hpp"
+#include "dud_device.hpp"
 
 namespace dud {
 
     class Scene {
-    private:
-        entt::registry registry;
     public:
-        Scene();
+        entt::registry registry;
+    private:
+        Device& device;
+    public:
+        Scene(dud::Device &device);
         ~Scene();
     };
 

@@ -6,12 +6,11 @@ layout(location = 1) in vec4 color;
 layout(location = 0) out vec4 outColor;
 
 layout(push_constant) uniform Push {
-    mat2 transform;
-    vec2 offset;
+    mat4 transform;
     vec3 color;
 } push;
 
 void main() {
-    //outColor = color;
-    gl_Position = vec4(position + push.offset, 0.0, 1.0);
+    outColor = color;
+    gl_Position = vec4(position, 0.0, 1.0);
 }
