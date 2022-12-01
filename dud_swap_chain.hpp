@@ -18,6 +18,7 @@ namespace dud {
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
         SwapChain(Device &deviceRef, VkExtent2D windowExtent);
+
         SwapChain(Device &deviceRef, VkExtent2D windowExtent, Ref<SwapChain> previous);
 
         ~SwapChain();
@@ -48,6 +49,11 @@ namespace dud {
 
         VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
+        bool compareSwapFormats(const SwapChain& chain) const {
+            return chain.swapChainImageFormat == swapChainImageFormat &&
+                   chain.swapChainDepthFormat == swapChainDepthFormat;
+        }
+
     private:
         void init();
 
@@ -66,11 +72,12 @@ namespace dud {
         // Helper functions
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
 
-        VkPresentModeKHR chooseSwapPresentMode( const std::vector<VkPresentModeKHR> &availablePresentModes);
+        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
 
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
         VkFormat swapChainImageFormat;
+        VkFormat swapChainDepthFormat;
         VkExtent2D swapChainExtent;
 
         std::vector<VkFramebuffer> swapChainFramebuffers;

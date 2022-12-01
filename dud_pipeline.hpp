@@ -1,8 +1,10 @@
 #pragma once
 
+#include "dud_device.hpp"
+#include "dud_core.hpp"
+
 #include <string>
 #include <vector>
-#include "dud_device.hpp"
 
 namespace dud {
 
@@ -25,10 +27,10 @@ namespace dud {
     public:
 
     private:
-        Device &device;
-        VkPipeline graphicsPipeline;
-        VkShaderModule vertShaderModule;
-        VkShaderModule fragmentShaderModule;
+        Device& device;
+        VkPipeline graphicsPipeline{};
+        VkShaderModule vertShaderModule{};
+        VkShaderModule fragmentShaderModule{};
 
     public:
         Pipeline(Device &device, const PipelineConfigInfo &configInfo, const std::string &vertexShaderPath,
