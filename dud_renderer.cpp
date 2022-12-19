@@ -89,8 +89,9 @@ namespace dud {
             window.resetWindowResizedFlag();
             recreateSwapChain();
         }
-
-        API_CALL_VALIDATE(result);
+        else{
+            API_CALL_VALIDATE(result);
+        }
 
         isFrameStarted = false;
         currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;

@@ -14,6 +14,7 @@ namespace dud {
         float aspectRatio = renderer.getExtendAspectRatio();
         //camera.SetOrthographicProjection(-aspectRatio, aspectRatio, -1, 1, -1, 1);
         camera.SetPerspectiveProjection(glm::radians(50.f), aspectRatio, 0.1f, 10.f);
+
         while (!window.shouldClose()) {
             glfwPollEvents();
             systemContainer.OnUpdate(scene->registry);
