@@ -12,7 +12,7 @@
 namespace dud {
     struct SimplePushConstantData {
         glm::mat4 transform;
-        alignas(128) glm::vec3 color;
+        alignas(64) glm::vec4 color;
     };
 
     RenderSystem::RenderSystem(Device &device, VkRenderPass renderPass) : device(device) {
@@ -54,7 +54,7 @@ namespace dud {
                                               "../shaders/default_fragment.frag.spv");
     }
 
-    void RenderSystem::renderScene(VkCommandBuffer commandBuffer, const Scope<Scene> &scene) {
+    void RenderSystem::renderScene(VkCommandBuffer commandBuffer, const Scope<Scene> &scene, const Camera& camera) const {
         pipeline->bind(commandBuffer);
 
         auto group = scene->registry.group<TransformComponent>(entt::get<MeshComponent>);
@@ -63,7 +63,7 @@ namespace dud {
             const auto& [transform, mesh] = group.get<TransformComponent,MeshComponent>(entity);
 
             SimplePushConstantData push{};
-            push.transform = transform.Transform;
+            push.transform = camera.GetProjection() * transform.mat4();
             push.color = mesh.color;
 
             vkCmdPushConstants(commandBuffer,

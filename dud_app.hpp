@@ -7,6 +7,8 @@
 #include "dud_core.hpp"
 #include "dud_scene.hpp"
 #include "dud_renderer.hpp"
+#include "dud_render_system.hpp"
+#include "systems/dud_systems_container.hpp"
 
 namespace dud {
     class App {
@@ -18,10 +20,9 @@ namespace dud {
         Window window{WIDTH, HEIGHT, "Main Window"};
         Device device{window};
         Renderer renderer{window, device};
+        SystemsContainer systemContainer{};
 
         Scope<Scene> scene;
-
-
     public:
         App();
         ~App();
@@ -32,5 +33,7 @@ namespace dud {
         void run();
     private:
         void loadScene();
+
+        void render(const RenderSystem &renderSystem, const Camera &camera);
     };
 }

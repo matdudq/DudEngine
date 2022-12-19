@@ -7,8 +7,11 @@ namespace dud {
     using Scope = std::unique_ptr<T>;
 
     template<typename T>
+    const auto MakeScope = std::make_unique<T>;
+
+    template<typename T>
     using Ref = std::shared_ptr<T>;
 
     template<typename T>
-    using Weak = std::weak_ptr<T>;
+    const auto MakeRef = std::make_shared<T>;
 }

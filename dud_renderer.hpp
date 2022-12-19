@@ -11,8 +11,8 @@
 namespace dud {
     class Renderer {
     private:
-        Window& window;
-        Device& device;
+        Window &window;
+        Device &device;
 
         Scope<SwapChain> swapChain;
         std::vector<VkCommandBuffer> commandBuffers;
@@ -21,13 +21,17 @@ namespace dud {
         int currentFrameIndex;
         bool isFrameStarted;
     public:
-        Renderer(Window& window, Device& device);
+        Renderer(Window &window, Device &device);
+
         ~Renderer();
 
         Renderer(const Renderer &) = delete;
+
         Renderer &operator=(const Renderer &) = delete;
 
         bool isFrameInProgress() const { return isFrameStarted; }
+
+        float getExtendAspectRatio() const { return swapChain->getExtentAspectRatio(); }
 
         VkRenderPass getSwapChainRenderPass() const {
             return swapChain->getRenderPass();
@@ -44,14 +48,18 @@ namespace dud {
         }
 
         VkCommandBuffer beginFrame();
+
         void endFrame();
 
         void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
+
         void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
     private:
         void createCommandBuffers();
+
         void freeCommandBuffers();
+
         void recreateSwapChain();
 
     };

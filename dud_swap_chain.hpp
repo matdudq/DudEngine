@@ -35,9 +35,13 @@ namespace dud {
 
         size_t imageCount() { return swapChainImages.size(); }
 
-        VkFormat getSwapChainImageFormat() { return swapChainImageFormat; }
+        VkFormat getImageFormat() { return swapChainImageFormat; }
 
-        VkExtent2D getSwapChainExtent() { return swapChainExtent; }
+        VkExtent2D getExtent() { return swapChainExtent; }
+
+        float getExtentAspectRatio() {
+            return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
+        }
 
         uint32_t width() const { return swapChainExtent.width; }
 
@@ -49,7 +53,7 @@ namespace dud {
 
         VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
-        bool compareSwapFormats(const SwapChain& chain) const {
+        bool compareSwapFormats(const SwapChain &chain) const {
             return chain.swapChainImageFormat == swapChainImageFormat &&
                    chain.swapChainDepthFormat == swapChainDepthFormat;
         }

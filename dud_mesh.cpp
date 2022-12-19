@@ -40,6 +40,5 @@ std::vector<VkVertexInputBindingDescription> dud::Mesh::Vertex::GetBindingDescri
 }
 
 std::vector<VkVertexInputAttributeDescription> dud::Mesh::Vertex::GetAttributeDescriptions() {
-    return {{0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position)},
-            {1, 0, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, color)}};
+    return {{0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)}};
 }

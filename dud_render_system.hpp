@@ -6,6 +6,7 @@
 #include "dud_scene.hpp"
 
 #include "memory"
+#include "dud_camera.hpp"
 
 
 namespace dud {
@@ -22,7 +23,7 @@ namespace dud {
         RenderSystem(const RenderSystem &) = delete;
         RenderSystem &operator=(const RenderSystem &) = delete;
 
-        void renderScene(VkCommandBuffer commandBuffer, const Scope<Scene> &scene);
+        void renderScene(VkCommandBuffer commandBuffer, const Scope<Scene> &scene, const Camera& camera) const;
 
     private:
         void createPipelineLayout();
