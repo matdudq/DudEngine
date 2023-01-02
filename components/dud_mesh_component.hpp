@@ -1,9 +1,9 @@
 #pragma once
 
-#include <utility>
+#include "../mesh.hpp"
+#include "../core.hpp"
 
-#include "../dud_mesh.hpp"
-#include "../dud_core.hpp"
+#include <utility>
 
 namespace dud{
     struct MeshComponent

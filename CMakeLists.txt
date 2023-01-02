@@ -7,20 +7,20 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(${PROJECT_NAME}
         main.cpp
-        dud_window.hpp
-        dud_window.cpp
-        dud_app.cpp
-        dud_app.hpp
-        dud_pipeline.cpp
-        dud_pipeline.hpp
-        dud_device.cpp
-        dud_device.hpp
-        dud_swap_chain.cpp
-        dud_swap_chain.hpp
+        window.hpp
+        window.cpp
+        app.cpp
+        app.hpp
+        pipeline.cpp
+        pipeline.hpp
+        device.cpp
+        device.hpp
+        swap_chain.cpp
+        swap_chain.hpp
         macros.cpp
         macros.hpp
-        dud_mesh.cpp
-        dud_mesh.hpp dud_scene.cpp dud_scene.hpp components/dud_transform_component.cpp components/dud_transform_component.hpp dud_core.hpp components/dud_mesh_component.cpp components/dud_mesh_component.hpp dud_renderer.cpp dud_renderer.hpp dud_render_system.cpp dud_render_system.hpp systems/dud_single_thread_system.hpp systems/dud_systems_container.hpp systems/dud_rotation_system.cpp systems/dud_rotation_system.hpp dud_camera.cpp dud_camera.hpp)
+        mesh.cpp
+        mesh.hpp scene.cpp scene.hpp components/dud_transform_component.cpp components/dud_transform_component.hpp core.hpp components/dud_mesh_component.cpp components/dud_mesh_component.hpp renderer.cpp renderer.hpp render_system.cpp render_system.hpp systems/dud_single_thread_system.hpp systems/dud_systems_container.hpp systems/dud_rotation_system.cpp systems/dud_rotation_system.hpp components/dud_camera_component.cpp components/dud_camera_component.hpp core.cpp)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)

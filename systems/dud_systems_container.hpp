@@ -3,7 +3,7 @@
 #include <vector>
 #include "dud_single_thread_system.hpp"
 #include "dud_rotation_system.hpp"
-#include "../dud_core.hpp"
+#include "../core.hpp"
 
 namespace dud {
     struct SystemsContainer {
