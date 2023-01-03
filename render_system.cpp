@@ -5,8 +5,8 @@
 
 #include "render_system.hpp"
 #include "macros.hpp"
-#include "components/dud_transform_component.hpp"
-#include "components/dud_mesh_component.hpp"
+#include "components/transform_component.hpp"
+#include "components/mesh_component.hpp"
 
 #include <memory>
 
@@ -63,34 +63,29 @@ void RenderSystem::RenderScene(VkCommandBuffer commandBuffer,
 							   const Renderer &renderer) const {
   pipeline->Bind(commandBuffer);
 
-  auto group =
-	  scene->registry.group<TransformComponent>(entt::get<MeshComponent>);
+  auto group = scene->registry.group<TransformComponent>(entt::get<MeshComponent>);
 
   auto cameraComponent = scene->GetPrimaryCamera();
   float aspectRatio = renderer.GetExtendAspectRatio();
-  //camera.SetOrthographicProjection(-aspectRatio, aspectRatio, -1, 1, -1, 1);
   cameraComponent->SetPerspectiveProjection(glm::radians(50.f),
 											aspectRatio,
 											0.1f,
 											100.f);
 
-  //camera.SetViewDirection(glm::vec3(0., 0., 1.f), glm::vec3(0.5f, 0.f, 1.f));
   cameraComponent->SetViewTarget(glm::vec3(0., 0., 0.f),
 								 glm::vec3(0.0f, 0.0f, 3.5f));
   auto cameraProjectionView = cameraComponent->GetProjectionView();
 
   for (auto entity : group) {
-	const auto &[transform, mesh] =
-		group.get<TransformComponent, MeshComponent>(entity);
+	const auto &[transform, mesh] = group.get<TransformComponent, MeshComponent>(entity);
 
 	SimplePushConstantData push{};
-	push.transform = cameraProjectionView * transform.Mat4();
+	push.transform = cameraProjectionView * transform.GetTransform();
 	push.color = mesh.color;
 
 	vkCmdPushConstants(commandBuffer,
 					   pipelineLayout,
-					   VK_SHADER_STAGE_VERTEX_BIT
-						   | VK_SHADER_STAGE_FRAGMENT_BIT,
+					   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 					   0,
 					   sizeof(SimplePushConstantData),
 					   &push);

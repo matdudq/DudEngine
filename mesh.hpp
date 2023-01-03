@@ -15,7 +15,13 @@ class Mesh {
 	static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
   };
 
-  Mesh(Device &device, const std::vector<Vertex> &vertices);
+  struct ModelBuilder
+  {
+	std::vector<Vertex> vertices{};
+	std::vector<uint32_t> indices{};
+  };
+
+  Mesh(Device &device, const ModelBuilder &builder);
   ~Mesh();
   Mesh(const Mesh &) = delete;
   Mesh &operator=(const Mesh &) = delete;
@@ -25,10 +31,17 @@ class Mesh {
 
  private:
   void CreateVertexBuffers(const std::vector<Vertex> &vertices);
+  void CreateIndexBuffers(std::vector<uint32_t> indices);
 
   Device &device;
+
   VkBuffer vertexBuffer{};
   VkDeviceMemory vertexBufferMemory{};
   uint32_t vertexCount{};
+
+  bool hasIndexBuffer = false;
+  VkBuffer indexBuffer{};
+  VkDeviceMemory indexBufferMemory{};
+  uint32_t indexCount{};
 };
 }

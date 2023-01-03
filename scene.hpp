@@ -1,7 +1,7 @@
 #pragma once
 
 #include "device.hpp"
-#include "components/dud_camera_component.hpp"
+#include "components/camera_component.hpp"
 
 #include <iostream>
 
@@ -10,10 +10,6 @@
 namespace dud {
 
 class Scene {
- public:
-  entt::registry registry;
- private:
-  Device &device;
  public:
   Scene(dud::Device &device);
   ~Scene();
@@ -27,5 +23,9 @@ class Scene {
 	std::cerr << "There is no camera in the scene!" << std::endl;
 	return nullptr;
   }
+
+  entt::registry registry;
+ private:
+  Device &device;
 };
 }

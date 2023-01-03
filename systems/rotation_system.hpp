@@ -1,5 +1,6 @@
 #pragma once
-#include "dud_single_thread_system.hpp"
+
+#include "single_thread_system.hpp"
 
 namespace dud{
     struct RotationSystem : SingleThreadSystem {

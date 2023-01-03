@@ -20,7 +20,7 @@ add_executable(${PROJECT_NAME}
         macros.cpp
         macros.hpp
         mesh.cpp
-        mesh.hpp scene.cpp scene.hpp components/dud_transform_component.cpp components/dud_transform_component.hpp core.hpp components/dud_mesh_component.cpp components/dud_mesh_component.hpp renderer.cpp renderer.hpp render_system.cpp render_system.hpp systems/dud_single_thread_system.hpp systems/dud_systems_container.hpp systems/dud_rotation_system.cpp systems/dud_rotation_system.hpp components/dud_camera_component.cpp components/dud_camera_component.hpp core.cpp)
+        mesh.hpp scene.cpp scene.hpp components/transform_component.cpp components/transform_component.hpp core.hpp components/mesh_component.cpp components/mesh_component.hpp renderer.cpp renderer.hpp render_system.cpp render_system.hpp systems/single_thread_system.hpp systems/systems_container.hpp systems/rotation_system.cpp systems/rotation_system.hpp components/camera_component.cpp components/camera_component.hpp core.cpp)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)

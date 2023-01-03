@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 #include "macros.hpp"
-#include "components/dud_transform_component.hpp"
-#include "components/dud_mesh_component.hpp"
+#include "components/transform_component.hpp"
+#include "components/mesh_component.hpp"
 
 #include <sstream>
 #include <memory>
@@ -123,6 +123,7 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
   renderPassBeginInfo.clearValueCount =
 	  static_cast<uint32_t>(clearValues.size());
   renderPassBeginInfo.pClearValues = clearValues.data();
+
 
   vkCmdBeginRenderPass(commandBuffer,
 					   &renderPassBeginInfo,

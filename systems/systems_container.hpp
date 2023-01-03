@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "dud_single_thread_system.hpp"
-#include "dud_rotation_system.hpp"
+#include "single_thread_system.hpp"
+#include "rotation_system.hpp"
 #include "../core.hpp"
 
 namespace dud {
